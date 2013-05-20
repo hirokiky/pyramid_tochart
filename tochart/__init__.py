@@ -40,6 +40,7 @@ def tochart(request, value, name=''):
     chart = Linechart(adapted)
     return chart
 
+
 def includeme(config):
     config.add_directive('set_tochart',
                          set_tochart)
