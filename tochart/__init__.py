@@ -44,4 +44,3 @@ def tochart(request, value, name=''):
 def includeme(config):
     config.add_directive('set_tochart',
                          set_tochart)
-    config.scan('.charts')
