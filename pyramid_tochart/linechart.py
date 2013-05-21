@@ -37,7 +37,9 @@ class Linechart(object):
                                    maxZoom=len(self.context) * pointInterval)
         chart = Chart(chart=chart_config,
                       xAxis=xaxis_config)
-        options = chart.add_series(series)
+        chart.add_series(series)
+
+        options = str(chart)
 
         html = render('pyramid_tochart:templates/highcharts/linechart.mako',
                       dict(options=options,
