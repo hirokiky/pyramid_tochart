@@ -25,6 +25,7 @@ class Linechart(object):
         return [y for x, y in self.context]
 
     def highchartable(self,
+                      renderer='pyramid_tochart:templates/highcharts/linechart.mako',
                       renderTo='container',
                       pointInterval=24 * 3600000):
         highcharts.need()
@@ -41,7 +42,7 @@ class Linechart(object):
 
         options = str(chart)
 
-        html = render('pyramid_tochart:templates/highcharts/linechart.mako',
+        html = render(renderer,
                       dict(options=options,
                            renderTo=renderTo))
 
