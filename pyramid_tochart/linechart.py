@@ -1,3 +1,5 @@
+from pyramid.renderers import render
+
 from js.highcharts import highcharts
 
 from highcharts import Chart
@@ -22,7 +24,6 @@ class Linechart(object):
     def getY(self):
         return [y for x, y in self.context]
 
-    @property
     def highchartable(self,
                       renderTo='container',
                       pointInterval=24 * 3600000):
@@ -36,6 +37,10 @@ class Linechart(object):
                                    maxZoom=len(self.context) * pointInterval)
         chart = Chart(chart=chart_config,
                       xAxis=xaxis_config)
-        chart.add_series(series)
+        options = chart.add_series(series)
 
-        return str(chart)
+        html = render('pyramid_tochart:templates/highcharts/linechart.mako',
+                      dict(options=options,
+                           renderTo=renderTo))
+
+        return html
