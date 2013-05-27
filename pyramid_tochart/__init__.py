@@ -1,5 +1,7 @@
 from pyramid.interfaces import IRequest
 import venusian
+from zope.component.factory import Factory
+from zope.component.interfaces import IFactory
 
 from .interfaces import ILinechart
 from .linechart import Linechart
@@ -15,15 +17,14 @@ def tochart_config(name='', chart_type='linechart'):
 
 
 def set_tochart(config, callable, name="", chart_type='linechart'):
-    type = ILinechart
+    chart_interface = config.registry.getUtility(IFactory, chart_type).getInterfaces()
     callable = config.maybe_dotted(callable)
     reg = config.registry
 
     def register():
         reg.registerAdapter(callable,
                             [IRequest, list],
-                            #TODO chart_type -> own Interface.
-                            ILinechart,
+                            chart_interface,
                             name=name)
     intr = config.introspectable(category_name='tochart',
                                  discriminator='tochart of {0}'.format(type.__name__),
@@ -44,3 +45,5 @@ def tochart(request, value, name=''):
 def includeme(config):
     config.add_directive('set_tochart',
                          set_tochart)
+    factory = Factory(Linechart, 'Linechart')
+    config.registry.registerUtility(factory, IFactory, 'linechart')

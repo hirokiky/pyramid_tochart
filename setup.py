@@ -10,6 +10,7 @@ requires = [
     'pyramid',
     'pyramid_fanstatic',
     'js.highcharts',
+    'zope.component',
     ]
 
 setup(name='pyramid_tochart',
