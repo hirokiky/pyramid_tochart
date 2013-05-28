@@ -17,7 +17,7 @@ def tochart_config(name='', chart_type='linechart'):
 
 
 def set_tochart(config, callable, name="", chart_type='linechart'):
-    chart_interface = config.registry.getUtility(IFactory, chart_type).getInterfaces()
+    chart_interface = list(config.registry.getUtility(IFactory, chart_type).getInterfaces())[0]
     callable = config.maybe_dotted(callable)
     reg = config.registry
 
@@ -34,16 +34,26 @@ def set_tochart(config, callable, name="", chart_type='linechart'):
                   introspectables=(intr,))
 
 
-def tochart(request, value, name=''):
+def add_chart_factory(config, chart_type, factory_class):
+    factory = Factory(factory_class)
+    config.registry.registerUtility(factory, IFactory, chart_type)
+
+
+def tochart(request, value, name='', chart_type='linechart'):
+    chart_factory = request.registry.getUtility(IFactory, chart_type)
+    chart_interface = list(chart_factory.getInterfaces())[0]
+
     adapted = request.registry.getMultiAdapter([request, value],
-                                               ILinechart,
+                                               chart_interface,
                                                name=name)
-    chart = Linechart(adapted)
+    chart = chart_factory(adapted)
     return chart
 
 
 def includeme(config):
     config.add_directive('set_tochart',
                          set_tochart)
-    factory = Factory(Linechart, 'Linechart')
-    config.registry.registerUtility(factory, IFactory, 'linechart')
+    config.add_directive('add_chart_factory',
+                         add_chart_factory)
+
+    config.add_chart_factory('linechart', Linechart)
